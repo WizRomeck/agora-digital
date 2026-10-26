@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ágora Digital (APCM-001) | Prototipo de Gestión Cívica ZMG</title>
+  <meta name="description" content="Avance funcional de propuesta tecnológica de gestión de reportes urbanos y alertas en la ZMG - UDGVirtual.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ==================== TOP SYSTEM BAR: ROLE SELECTOR ==================== -->
+  <div class="role-bar">
+    <div class="role-bar-container">
+      <div class="role-info">
+        <span class="role-system-tag">ARQUITECTURA DE ROLES:</span>
+        <span class="role-current-desc" id="roleCurrentDesc">Modo actual: <strong>Ciudadano (Acceso 100% Anónimo)</strong></span>
+      </div>
+      <div class="role-selector-chips" role="radiogroup" aria-label="Selector de Rol">
+        <button class="role-chip active" data-role="citizen" id="roleBtnCitizen" title="Acceso sin cuenta, enfocado en levantar y consultar reportes">
+          <span class="chip-icon">👤</span>
+          <span class="chip-text">Ciudadano (Anónimo)</span>
+        </button>
+        <button class="role-chip" data-role="operator" id="roleBtnOperator" title="Acceso de gestión con permisos para cambiar estatus y despachar">
+          <span class="chip-icon">🛠️</span>
+          <span class="chip-text">Operador Municipal</span>
+        </button>
+        <button class="role-chip" data-role="academic" id="roleBtnAcademic" title="Vista académica para evaluación de cierre de proyecto">
+          <span class="chip-icon">🎓</span>
+          <span class="chip-text">Ficha Académica UDG</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== HEADER / NAVIGATION ==================== -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <div class="brand-title">
+            <span class="brand-name">ÁGORA DIGITAL</span>
+            <span class="badge-code">APCM-001</span>
+          </div>
+          <span class="brand-sub">Gestión Cívica & Alerta Temprana • ZMG</span>
+        </div>
+      </div>
+
+      <!-- Main Navigation Tabs -->
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab active" data-tab="tab-citizen" role="tab" aria-selected="true" id="tabNavCitizen">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Portal Ciudadano
+        </button>
+        <button class="nav-tab" data-tab="tab-dashboard" role="tab" aria-selected="false" id="tabNavDashboard">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+          Consola y Mapa ZMG
+        </button>
+        <button class="nav-tab" data-tab="tab-future" role="tab" aria-selected="false" id="tabNavFuture">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Módulos Proyectados
+        </button>
+        <button class="nav-tab" data-tab="tab-project" role="tab" aria-selected="false" id="tabNavProject">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          Ficha UDG & Cierre
+        </button>
+      </nav>
+
+      <!-- Contextual Action (Enabled only for Operator) -->
+      <div class="header-action">
+        <button class="btn btn-warning" id="btnEmitirAlerta" title="Requiere rol de Operador Municipal">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Alerta Preventiva
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner de Notificación de Alerta Activa -->
+  <div class="alert-banner" id="alertBanner">
+    <div class="alert-banner-content">
+      <div class="alert-tag">AVISO PREVENTIVO PROTECCIÓN CIVIL</div>
+      <p class="alert-text"><strong>Puntos Críticos de Inundación:</strong> Monitoreo preventivo en pasos a desnivel de Av. López Mateos y Av. Patria por lluvias en la ZMG.</p>
+    </div>
+    <button class="alert-close" id="btnCloseAlert" aria-label="Cerrar alerta">&times;</button>
+  </div>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-content">
+
+    <!-- ==========================================================================
+         VISTA 1: PORTAL CIUDADANO (REPORTE ANÓNIMO) - NÚCLEO PRINCIPAL
+         ========================================================================== -->
+    <section id="tab-citizen" class="tab-pane active" role="tabpanel">
+
+      <!-- Anonymous Access Notice -->
+      <div class="role-notice-card">
+        <div class="notice-icon">🛡️</div>
+        <div class="notice-body">
+          <h4>Sistema de Acceso Ciudadano Anónimo (Cumplimiento LGPDPDP)</h4>
+          <p>Para garantizar la máxima participación ciudadana y proteger la identidad de los vecinos, <strong>no se requiere crear cuenta ni ingresar contraseñas</strong>. Todo reporte genera un <strong>Folio Cívico único</strong> para su seguimiento público.</p>
+        </div>
+      </div>
+
+      <div class="citizen-layout">
+        <!-- Citizen Form -->
+        <div class="card form-card">
+          <div class="card-header">
+            <div>
+              <span class="badge badge-accent">Reporte Directo</span>
+              <h2 class="card-title">Levantar Incidencia Urbana</h2>
+              <p class="card-subtitle">Completa los datos esenciales. Tu reporte se georreferencia de forma anónima.</p>
+            </div>
+          </div>
+
+          <form id="citizenReportForm" class="citizen-form">
+            <!-- Step 1: Category Selection -->
+            <div class="form-section">
+              <label class="form-label">1. Tipo de Falla o Problema</label>
+              <div class="category-grid">
+                <label class="category-option">
+                  <input type="radio" name="reportCat" value="Bacheo" checked>
+                  <div class="cat-box">
+                    <span class="cat-icon">🕳️</span>
+                    <span class="cat-name">Bacheo</span>
+                    <span class="cat-sub">Asfalto o baches</span>
+                  </div>
+                </label>
+
+                <label class="category-option">
+                  <input type="radio" name="reportCat" value="Luminarias">
+                  <div class="cat-box">
+                    <span class="cat-icon">💡</span>
+                    <span class="cat-name">Luminarias</span>
+                    <span class="cat-sub">Lámpara apagada</span>
+                  </div>
+                </label>
+
+                <label class="category-option">
+                  <input type="radio" name="reportCat" value="Agua">
+                  <div class="cat-box">
+                    <span class="cat-icon">💧</span>
+                    <span class="cat-name">Fuga / Agua</span>
+                    <span class="cat-sub">Fugas o drenaje</span>
+                  </div>
+                </label>
+
+                <label class="category-option">
+                  <input type="radio" name="reportCat" value="Residuos">
+                  <div class="cat-box">
+                    <span class="cat-icon">🗑️</span>
+                    <span class="cat-name">Residuos</span>
+                    <span class="cat-sub">Basura o ramas</span>
+                  </div>
+                </label>
+
+                <label class="category-option">
+                  <input type="radio" name="reportCat" value="Protección Civil">
+                  <div class="cat-box alert-border">
+                    <span class="cat-icon">🚨</span>
+                    <span class="cat-name">Prot. Civil</span>
+                    <span class="cat-sub">Árbol en riesgo</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Step 2: Location -->
+            <div class="form-section">
+              <div class="section-title-row">
+                <label class="form-label">2. Ubicación en la ZMG</label>
+                <button type="button" class="btn btn-sm btn-ghost" id="btnSimulateGPS">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+                  Detectar GPS
+                </button>
+              </div>
+
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="sub-label">Municipio:</label>
+                  <select id="formMunicipio" required>
+                    <option value="Guadalajara">Guadalajara</option>
+                    <option value="Zapopan" selected>Zapopan</option>
+                    <option value="Tlaquepaque">San Pedro Tlaquepaque</option>
+                    <option value="Tonalá">Tonalá</option>
+                    <option value="Tlajomulco">Tlajomulco de Zúñiga</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="sub-label">Colonia:</label>
+                  <input type="text" id="formColonia" placeholder="Ej. Americana, Zapopan Centro" value="Zapopan Centro" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="sub-label">Calle y Cruce o Referencia:</label>
+                <input type="text" id="formCalle" placeholder="Ej. Av. Hidalgo y Calle 28 de Enero" value="Av. Hidalgo #350" required>
+              </div>
+
+              <div class="gps-badge" id="gpsStatusBadge">
+                <span class="gps-dot"></span>
+                <span id="gpsCoordsText">GPS Georreferenciado: 20.7214° N, 103.3912° W</span>
+              </div>
+            </div>
+
+            <!-- Step 3: Description -->
+            <div class="form-section">
+              <label class="form-label">3. Breve Descripción del Problema</label>
+              <div class="form-group">
+                <textarea id="formDescripcion" rows="2" placeholder="Describe brevemente la afectación..." required>Bache pronunciado sobre el carril derecho que genera riesgo para ciclistas y vehículos.</textarea>
+              </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-lg" id="btnSubmitReport">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Generar Folio y Enviar Reporte
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Citizen Folio Lookup & Guide -->
+        <div class="citizen-side">
+          <!-- Quick Query by Folio -->
+          <div class="card folio-search-card">
+            <h3 class="side-title">Consultar Folio de Reporte</h3>
+            <p class="card-subtitle">Ingresa tu número de folio para ver el estado de atención actual:</p>
+            <div class="search-box mt-2">
+              <input type="text" id="inputQueryFolio" placeholder="Ej. FOL-2026-001">
+              <button class="btn btn-secondary btn-sm" id="btnQueryFolio">Buscar</button>
+            </div>
+            <div id="queryResultBox" class="query-result" style="display: none;"></div>
+          </div>
+
+          <div class="card info-card">
+            <h3 class="side-title">Mecanismo del Prototipo Cívico</h3>
+            <ul class="process-steps">
+              <li class="step-item">
+                <div class="step-num">1</div>
+                <div>
+                  <strong>Sin Registro de Cuenta:</strong>
+                  <p>Acceso inmediato para evitar brechas digitales y salvaguardar datos confidenciales.</p>
+                </div>
+              </li>
+              <li class="step-item">
+                <div class="step-num">2</div>
+                <div>
+                  <strong>Folio Cívico Inmutable:</strong>
+                  <p>Identificador público con el cual el ciudadano da seguimiento sin trámites presenciales.</p>
+                </div>
+              </li>
+              <li class="step-item">
+                <div class="step-num">3</div>
+                <div>
+                  <strong>Visualización Abierta:</strong>
+                  <p>Todos los reportes levantados se integran a la vista del mapa metropolitano.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VISTA 2: CONSOLA Y MAPA METROPOLITANO (GESTIÓN MUNICIPAL)
+         ========================================================================== -->
+    <section id="tab-dashboard" class="tab-pane" role="tabpanel">
+
+      <!-- Role Permission Banner in Dashboard -->
+      <div class="permission-banner" id="dashboardRoleBanner">
+        <span class="perm-tag">MODO CIUDADANO (SOLO CONSULTA)</span>
+        <span class="perm-text">Estás visualizando el mapa en modo consulta. Para despachar cuadrillas o cambiar estatus, selecciona el rol <strong>Operador Municipal</strong> en la barra superior.</span>
+      </div>
+
+      <!-- Basic Operational Metrics -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-blue">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-title">Reportes Registrados</span>
+            <span class="kpi-value" id="kpiTotal">6</span>
+            <span class="kpi-trend positive">Base de datos de prueba</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-amber">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-title">Pendientes / En Proceso</span>
+            <span class="kpi-value" id="kpiPending">5</span>
+            <span class="kpi-trend neutral">En espera de cuadrilla</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-green">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-title">Resueltos</span>
+            <span class="kpi-value" id="kpiResolved">1</span>
+            <span class="kpi-trend positive">Concluidos</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-purple">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-title">Privacidad LGPDPDP</span>
+            <span class="kpi-value">100% Anónimo</span>
+            <span class="kpi-trend positive">Sin cuentas requeridas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Operational Split: Map + Incidents Feed -->
+      <div class="dashboard-split">
+        <!-- Interactive Vector Map of ZMG -->
+        <div class="card map-container-card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Mapa Geoespacial Metropolitano</h2>
+              <p class="card-subtitle">Haz clic o pasa el mouse sobre cualquier punto para inspeccionar el folio.</p>
+            </div>
+            <div class="map-badges">
+              <span class="badge badge-primary"><span class="dot"></span> GDL</span>
+              <span class="badge badge-info"><span class="dot"></span> Zapopan</span>
+              <span class="badge badge-purple"><span class="dot"></span> Tlaquepaque</span>
+              <span class="badge badge-success"><span class="dot"></span> Tlajomulco</span>
+            </div>
+          </div>
+
+          <!-- Interactive SVG Map Canvas -->
+          <div class="interactive-map" id="mapCanvas">
+            <!-- SVG Map Graphic -->
+            <svg class="zmg-svg-map" viewBox="0 0 800 480" xmlns="http://www.w3.org/2000/svg" id="zmgSvgElement">
+              <defs>
+                <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1"/>
+                </pattern>
+              </defs>
+
+              <rect width="100%" height="100%" fill="#0a1120"/>
+              <rect width="100%" height="100%" fill="url(#grid-pattern)"/>
+
+              <!-- Stylized Municipal Zone Contours -->
+              <!-- Zapopan Region -->
+              <path class="zone-polygon" d="M 120,60 L 320,50 L 390,140 L 310,250 L 190,260 L 100,160 Z" fill="rgba(56, 189, 248, 0.06)" stroke="rgba(56, 189, 248, 0.3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+              <text x="210" y="110" fill="rgba(56, 189, 248, 0.5)" font-size="13" font-weight="600" letter-spacing="2">ZAPOPAN</text>
+
+              <!-- Guadalajara Region -->
+              <path class="zone-polygon" d="M 320,50 L 520,70 L 550,210 L 450,280 L 310,250 L 390,140 Z" fill="rgba(99, 102, 241, 0.08)" stroke="rgba(99, 102, 241, 0.4)" stroke-width="1.5"/>
+              <text x="420" y="170" fill="rgba(165, 180, 252, 0.7)" font-size="14" font-weight="700" letter-spacing="2">GUADALAJARA</text>
+
+              <!-- Tlaquepaque & Tonalá Region -->
+              <path class="zone-polygon" d="M 450,280 L 550,210 L 680,260 L 620,380 L 470,390 L 390,320 Z" fill="rgba(168, 85, 247, 0.06)" stroke="rgba(168, 85, 247, 0.3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+              <text x="520" y="320" fill="rgba(216, 180, 254, 0.6)" font-size="13" font-weight="600" letter-spacing="2">TLAQUEPAQUE / TONALÁ</text>
+
+              <!-- Tlajomulco Region -->
+              <path class="zone-polygon" d="M 190,260 L 390,320 L 470,390 L 410,460 L 220,440 Z" fill="rgba(16, 185, 129, 0.05)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+              <text x="270" y="380" fill="rgba(110, 231, 183, 0.5)" font-size="13" font-weight="600" letter-spacing="2">TLAJOMULCO</text>
+
+              <!-- Arterias Principales -->
+              <line x1="140" y1="210" x2="650" y2="210" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+              <text x="145" y="200" fill="rgba(255,255,255,0.3)" font-size="10">Av. Vallarta / Juárez</text>
+
+              <line x1="370" y1="50" x2="350" y2="430" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+              <text x="355" y="80" fill="rgba(255,255,255,0.3)" font-size="10">Calz. Independencia</text>
+
+              <!-- Pins Container (Generado con hit-areas estables en JS) -->
+              <g id="mapPinsGroup"></g>
+            </svg>
+
+            <!-- Map Floating Tooltip (Pointer-events: none garantizado) -->
+            <div class="map-tooltip" id="mapTooltip" style="display: none;">
+              <div class="tooltip-header">
+                <span class="tooltip-folio" id="ttFolio">#FOL-2026-001</span>
+                <span class="tooltip-status badge" id="ttStatus">Pendiente</span>
+              </div>
+              <div class="tooltip-title" id="ttTitle">Bache de alto impacto</div>
+              <div class="tooltip-location" id="ttLoc">Col. Americana, Guadalajara</div>
+            </div>
+
+            <!-- Heatmap legend -->
+            <div class="map-legend">
+              <span class="legend-item"><span class="legend-dot dot-red"></span> Protección Civil</span>
+              <span class="legend-item"><span class="legend-dot dot-amber"></span> Servicios Pendiente</span>
+              <span class="legend-item"><span class="legend-dot dot-green"></span> Atendido / Resuelto</span>
+            </div>
+          </div>
+
+          <!-- Pinned Incident Inspector Card (Aparece abajo del mapa sin bugeos) -->
+          <div class="map-inspector-box" id="mapInspectorBox">
+            <div class="inspector-empty" id="inspectorEmpty">
+              <span>💡 Haz clic en cualquier punto del mapa para ver los detalles completos de la incidencia.</span>
+            </div>
+            <div class="inspector-content" id="inspectorContent" style="display: none;">
+              <div class="inspector-header">
+                <div>
+                  <span class="badge" id="inspStatus">Pendiente</span>
+                  <span class="inspector-folio" id="inspFolio">#FOL-2026-001</span>
+                </div>
+                <button class="btn btn-sm btn-ghost" id="btnCloseInspector">Cerrar</button>
+              </div>
+              <h4 class="inspector-title" id="inspTitle">Título de la incidencia</h4>
+              <p class="inspector-loc" id="inspLoc">Ubicación detallada</p>
+              <p class="inspector-desc" id="inspDesc">Descripción del reporte</p>
+              <div class="inspector-footer" id="inspFooter">
+                <!-- Action button shown only for Operator -->
+                <button class="btn btn-sm btn-primary operator-only-btn" id="btnInspResolve">Marcar como Resuelto</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Incidents List & Filtering -->
+        <div class="card incident-card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Listado de Incidencias</h2>
+              <p class="card-subtitle">Seguimiento por folio cívico</p>
+            </div>
+            <span class="counter-tag" id="visibleCounter">Mostrando 6 reportes</span>
+          </div>
+
+          <!-- Filter Toolbar -->
+          <div class="filter-toolbar">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="filterSearch" placeholder="Buscar folio, calle, colonia...">
+            </div>
+
+            <div class="select-group">
+              <select id="filterMunicipio">
+                <option value="all">Todos los Municipios</option>
+                <option value="Guadalajara">Guadalajara</option>
+                <option value="Zapopan">Zapopan</option>
+                <option value="Tlaquepaque">Tlaquepaque</option>
+                <option value="Tlajomulco">Tlajomulco</option>
+              </select>
+
+              <select id="filterCategoria">
+                <option value="all">Todas las Categorías</option>
+                <option value="Bacheo">Bacheo</option>
+                <option value="Luminarias">Luminarias</option>
+                <option value="Agua">Agua / Fuga</option>
+                <option value="Residuos">Residuos</option>
+                <option value="Protección Civil">Protección Civil</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Incidents Interactive List -->
+          <div class="incidents-list" id="incidentsContainer">
+            <!-- Dynamic incident cards injected here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VISTA 3: ARQUITECTURA Y MÓDULOS PROYECTADOS
+         ========================================================================== -->
+    <section id="tab-future" class="tab-pane" role="tabpanel">
+      <div class="future-modules-layout">
+
+        <div class="card future-hero-card">
+          <span class="badge badge-primary">Especificación Técnica</span>
+          <h2 class="card-title mt-1">Arquitectura de Módulos Futuros y Limitaciones Reales</h2>
+          <p class="card-subtitle">Para la evaluación del proyecto de titulación, este apartado documenta cómo se integrarán los módulos complementarios y las restricciones técnicas/institucionales reales que determinan su viabilidad.</p>
+        </div>
+
+        <div class="future-grid">
+
+          <!-- Module 1: Role System -->
+          <div class="card future-card">
+            <div class="future-head">
+              <span class="future-badge">Módulo 1 • Seguridad</span>
+              <span class="status-tag tag-planned">En Especificación</span>
+            </div>
+            <h3>Sistema de Cuentas y Control de Acceso por Roles (RBAC)</h3>
+            <p><strong>Diseño de la solución:</strong></p>
+            <ul class="future-points">
+              <li><strong>Ciudadano (Anónimo por diseño):</strong> Sin necesidad de credenciales ni correos; opera mediante tokens efímeros y folios cívicos para eliminar la fricción y salvaguardar la privacidad según la LGPDPDP.</li>
+              <li><strong>Operador de Cuadrilla:</strong> Autenticación para cambiar estados de campo (Pendiente → Atendido) y adjuntar evidencia fotográfica de reparación.</li>
+              <li><strong>Supervisor Municipal:</strong> Asignación de reportes entre dependencias y priorización de zonas críticas.</li>
+              <li><strong>Protección Civil:</strong> Emisión autorizada de alertas tempranas geolocalizadas.</li>
+            </ul>
+            <div class="future-footer">
+              <small>El selector de roles en la barra superior simula esta separación de permisos en el prototipo actual.</small>
+            </div>
+          </div>
+
+          <!-- Module 2: WhatsApp Web / Bot -->
+          <div class="card future-card">
+            <div class="future-head">
+              <span class="future-badge">Módulo 2 • Inclusión Digital</span>
+              <span class="status-tag tag-prototype">Prototipo Conversacional</span>
+            </div>
+            <h3>Canal de Mensajería WhatsApp (Inclusión Cívica)</h3>
+            <p><strong>Diseño de la solución:</strong></p>
+            <ul class="future-points">
+              <li>Diseñado para usuarios con brecha digital o personas de la tercera edad que no descargan aplicaciones móviles adicionales.</li>
+              <li>Flujo mediante árbol de decisiones numérico simple (1: Reportar falla, 2: Consultar folio, 3: Ver alertas).</li>
+              <li><strong>Integración técnica prevista:</strong> Mediante la API oficial de WhatsApp Cloud o Meta Business Platform conectada con el servicio web de folios.</li>
+            </ul>
+            <div class="future-action-box">
+              <button class="btn btn-sm btn-secondary" id="btnOpenBotSim">Probar Simulador de Chatbot</button>
+            </div>
+          </div>
+
+          <!-- Module 3: Jalisco Open Data / State API Reality -->
+          <div class="card future-card">
+            <div class="future-head">
+              <span class="future-badge">Módulo 3 • Interoperabilidad</span>
+              <span class="status-tag tag-evaluation">Análisis de Viabilidad</span>
+            </div>
+            <h3>Conexión con Datos y Dependencias del Gobierno de Jalisco</h3>
+            <p><strong>Realidad técnica e institucional del alcance:</strong></p>
+            <ul class="future-points">
+              <li>El documento contempla mapear el catálogo de datos abiertos (<em>datos.jalisco.gob.mx</em>) para la validación de colonias y polígonos.</li>
+              <li><strong>Consideración honesta:</strong> Las dependencias gubernamentales (ayuntamientos y gobierno estatal) no siempre cuentan con APIs públicas de escritura o sincronización en tiempo real, e involucran barreras políticas y de mantenimiento de servidores.</li>
+              <li><strong>Estrategia adoptada en Ágora Digital:</strong> La plataforma se diseñó para operar de forma <strong>autónoma</strong> con su propio catálogo georreferenciado metropolitano, de modo que la gestión cívica funciona al 100% independientemente de si el gobierno estatal habilita o no sus APIs.</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         VISTA 4: FICHA UDG & CIERRE PMBOK
+         ========================================================================== -->
+    <section id="tab-project" class="tab-pane" role="tabpanel">
+      <div class="project-summary-grid">
+        <!-- Project Identity Card -->
+        <div class="card project-header-card">
+          <div class="institution-badge">
+            <span class="inst-logo">UDG</span>
+            <span>Universidad de Guadalajara • UDGVirtual</span>
+          </div>
+
+          <h2 class="project-title">Ágora Digital (APCM-001)</h2>
+          <p class="project-subtitle">Plataforma de Gestión Cívica y Alerta Temprana en la Zona Metropolitana de Guadalajara</p>
+          <div class="project-meta-pills">
+            <span class="meta-pill"><strong>Materia:</strong> Problematización de la sociedad de información</span>
+            <span class="meta-pill"><strong>Fase:</strong> Gestión de procesos de cierre del proyecto</span>
+            <span class="meta-pill"><strong>Ciclo:</strong> 2026B</span>
+          </div>
+
+          <div class="author-advisor-box">
+            <div class="author-col">
+              <span class="label-tiny">ALUMNO / TITULAR</span>
+              <strong class="person-name">Luis Vicente Gómez Díaz</strong>
+              <span class="person-code">Código: 224070115</span>
+              <span class="person-role">Elaboración y Gestión del Proyecto</span>
+            </div>
+            <div class="advisor-col">
+              <span class="label-tiny">ASESORA ACADÉMICA</span>
+              <strong class="person-name">Mtra. Ana María Franco Gordo</strong>
+              <span class="person-code">UDGVirtual</span>
+              <span class="person-role">Asesoría y Evaluación Académica</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PMBOK Closing Metrics -->
+        <div class="card pmbok-kpi-card">
+          <h3 class="side-title">Informe de Cierre de Proyecto (Formato C-05)</h3>
+          <div class="pmbok-metrics-table">
+            <div class="pm-row">
+              <span class="pm-criterion">Alcance de la Propuesta</span>
+              <span class="pm-meta">6 entregables de diseño y prototipo</span>
+              <span class="badge badge-success">Cumplido</span>
+            </div>
+            <div class="pm-row">
+              <span class="pm-criterion">Cronograma de Ejecución</span>
+              <span class="pm-meta">14 semanas (Agosto - Noviembre 2026)</span>
+              <span class="badge badge-success">Conforme a base</span>
+            </div>
+            <div class="pm-row">
+              <span class="pm-criterion">Cierre de Presupuesto</span>
+              <span class="pm-meta">Recursos propios y software libre</span>
+              <span class="badge badge-success">$0.00 MXN gastados</span>
+            </div>
+            <div class="pm-row">
+              <span class="pm-criterion">Alineación Metodológica</span>
+              <span class="pm-meta">Guía del PMBOK (5ta Edición)</span>
+              <span class="badge badge-success">Acreditado</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Entregables Técnicos Concluidos -->
+        <div class="card deliverables-card">
+          <h3 class="side-title">Matriz de Entregables Técnicos (Propuesta Ágora Digital)</h3>
+          <div class="deliverables-grid">
+            <div class="deliv-item">
+              <div class="deliv-head">
+                <span class="deliv-code">ENT-01</span>
+                <span class="badge badge-success">Concluido</span>
+              </div>
+              <h4>Aplicación Móvil Cívica (iOS / Android)</h4>
+              <p>Flujo y diseño de interfaz para el levantamiento georreferenciado de anomalías urbanas y consulta de avisos.</p>
+            </div>
+
+            <div class="deliv-item">
+              <div class="deliv-head">
+                <span class="deliv-code">ENT-02</span>
+                <span class="badge badge-success">Concluido</span>
+              </div>
+              <h4>Chatbot Alternativo (WhatsApp)</h4>
+              <p>Árbol de diálogo conversacional diseñado para ciudadanos con brecha digital, sin descargas requeridas.</p>
+            </div>
+
+            <div class="deliv-item">
+              <div class="deliv-head">
+                <span class="deliv-code">ENT-03</span>
+                <span class="badge badge-success">Concluido</span>
+              </div>
+              <h4>Consola Administrativa Web</h4>
+              <p>Tablero operativo para personal municipal con mapa de incidencias y filtros de priorización.</p>
+            </div>
+
+            <div class="deliv-item">
+              <div class="deliv-head">
+                <span class="deliv-code">ENT-04</span>
+                <span class="badge badge-success">Concluido</span>
+              </div>
+              <h4>Modelo de Datos y Colonias</h4>
+              <p>Estructuras JSON y diccionario de campos para georreferenciación de la Zona Metropolitana de Guadalajara.</p>
+            </div>
+
+            <div class="deliv-item">
+              <div class="deliv-head">
+                <span class="deliv-code">ENT-05</span>
+                <span class="badge badge-success">Concluido</span>
+              </div>
+              <h4>Seguridad y Privacidad LGPDPDP</h4>
+              <p>Esquema de anonimización de identidades para fomento de la participación ciudadana sin riesgos.</p>
+            </div>
+
+            <div class="deliv-item">
+              <div class="deliv-head">
+                <span class="deliv-code">ENT-06</span>
+                <span class="badge badge-success">Concluido</span>
+              </div>
+              <h4>Expediente Documental de Cierre</h4>
+              <p>Acta de aceptación, cierre de adquisiciones, protocolo de transferencia y lecciones aprendidas.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== MODAL: SIMULADOR DE CHATBOT WHATSAPP ==================== -->
+  <div class="modal-overlay" id="botModal" style="display: none;">
+    <div class="modal-card phone-modal-card">
+      <div class="modal-header">
+        <span class="badge badge-success">Canal de Inclusión Digital</span>
+        <button class="modal-close" id="btnCloseBotModal">&times;</button>
+      </div>
+
+      <div class="phone-mockup-inner">
+        <!-- WhatsApp Header -->
+        <div class="wa-header">
+          <div class="wa-avatar">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="wa-contact">
+            <div class="wa-name">Ágora Bot Jalisco <span class="wa-verified">✓</span></div>
+            <div class="wa-status">En línea • Canal Ciudadano</div>
+          </div>
+        </div>
+
+        <!-- WhatsApp Chat Body -->
+        <div class="wa-chat-body" id="waChatBody">
+          <div class="wa-date-badge">HOY</div>
+          
+          <div class="wa-msg wa-received">
+            <p>¡Hola! 👋 Soy <strong>Ágora Bot</strong>. Puedes emitir un reporte cívico o consultar avisos de Protección Civil.</p>
+            <div class="wa-menu">
+              <div><strong>1️⃣</strong> Reportar bache, fuga o luminaria</div>
+              <div><strong>2️⃣</strong> Consultar estado de un folio</div>
+              <div><strong>3️⃣</strong> Avisos de Protección Civil</div>
+            </div>
+            <span class="wa-time">Ahora</span>
+          </div>
+        </div>
+
+        <!-- Quick prompts bar -->
+        <div class="wa-quick-bar">
+          <button class="wa-pill" data-msg="1">1. Reportar falla</button>
+          <button class="wa-pill" data-msg="2">2. Consultar folio</button>
+          <button class="wa-pill" data-msg="3">3. Alertas PC</button>
+        </div>
+
+        <!-- WhatsApp Input -->
+        <form class="wa-input-bar" id="waInputForm">
+          <input type="text" id="waInputText" placeholder="Escribe un mensaje o número..." autocomplete="off">
+          <button type="submit" class="wa-send-btn" id="waSendBtn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: EMITIR ALERTA PREVENTIVA ==================== -->
+  <div class="modal-overlay" id="alertModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="badge badge-danger">Protección Civil</span>
+          <h3 class="modal-title">Emitir Aviso Preventivo</h3>
+        </div>
+        <button class="modal-close" id="btnCloseModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-subtitle">Difusión inmediata en el portal para advertir a la población.</p>
+        
+        <div class="form-group mt-2">
+          <label class="form-label">Zona o Cuadrante Afectado:</label>
+          <input type="text" id="modalAlertZone" value="Zapopan y Guadalajara (Av. López Mateos y Av. Patria)">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Mensaje para la Ciudadanía:</label>
+          <textarea id="modalAlertMsg" rows="3">Monitoreo activo por encharcamientos en pasos a desnivel. Conduzca con precaución.</textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="btnCancelModal">Cancelar</button>
+        <button class="btn btn-warning" id="btnConfirmAlert">Publicar Aviso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ÉXITO DE REPORTE ==================== -->
+  <div class="modal-overlay" id="detailModal" style="display: none;">
+    <div class="modal-card" id="detailModalContent"></div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="appToast">
+    <span class="toast-icon">✓</span>
+    <span class="toast-msg" id="toastMsg">Acción ejecutada correctamente</span>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <strong>Ágora Digital (APCM-001)</strong> • UDGVirtual 2026B
+        <span class="footer-author">Desarrollado por <strong>Luis Vicente Gómez Díaz</strong> (Cód. 224070115)</span>
+      </div>
+      <div class="footer-right">
+        <span class="footer-tag">Despliegue Vercel</span>
+        <span class="footer-tag">PMBOK 5ta Ed.</span>
+        <span class="footer-tag">Acceso Anónimo LGPDPDP</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
